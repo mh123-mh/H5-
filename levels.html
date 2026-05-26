@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我是环境检察员 - 选择关卡</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .levels-container {
+            text-align: center;
+            padding: var(--spacing-lg);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .levels-title {
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            color: var(--color-primary);
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--spacing-md);
+            max-width: 500px;
+            margin: 0 auto;
+            animation: slideUp 0.5s ease-out 0.2s both;
+        }
+
+        .level-card {
+            aspect-ratio: 1;
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            position: relative;
+            animation: fadeIn 0.3s ease-out backwards;
+        }
+
+        .level-card:nth-child(1) { animation-delay: 0.1s; }
+        .level-card:nth-child(2) { animation-delay: 0.15s; }
+        .level-card:nth-child(3) { animation-delay: 0.2s; }
+        .level-card:nth-child(4) { animation-delay: 0.25s; }
+        .level-card:nth-child(5) { animation-delay: 0.3s; }
+        .level-card:nth-child(6) { animation-delay: 0.35s; }
+        .level-card:nth-child(7) { animation-delay: 0.4s; }
+        .level-card:nth-child(8) { animation-delay: 0.45s; }
+        .level-card:nth-child(9) { animation-delay: 0.5s; }
+        .level-card:nth-child(10) { animation-delay: 0.55s; }
+
+        .level-card.locked {
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .level-card.unlocked {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+        }
+
+        .level-card.unlocked:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+        }
+
+        .level-number {
+            font-size: clamp(1rem, 5vw, 1.8rem);
+            font-weight: bold;
+            color: white;
+        }
+
+        .lock-icon {
+            font-size: clamp(1.2rem, 6vw, 2rem);
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 2px;
+            margin-top: 5px;
+        }
+
+        .star {
+            font-size: 12px;
+            color: var(--color-accent);
+        }
+
+        .back-btn {
+            position: fixed;
+            top: var(--spacing-md);
+            left: var(--spacing-md);
+            padding: var(--spacing-xs) var(--spacing-md);
+            font-size: var(--font-size-sm);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .levels-grid {
+                gap: var(--spacing-sm);
+                max-width: 350px;
+            }
+
+            .level-card {
+                padding: var(--spacing-xs);
+            }
+
+            .level-number {
+                font-size: clamp(0.8rem, 4vw, 1.2rem);
+            }
+
+            .lock-icon {
+                font-size: clamp(1rem, 5vw, 1.5rem);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .levels-grid {
+                gap: 8px;
+                max-width: 280px;
+            }
+
+            .level-number {
+                font-size: clamp(0.7rem, 4vw, 1rem);
+            }
+
+            .lock-icon {
+                font-size: clamp(0.9rem, 4vw, 1.3rem);
+            }
+
+            .back-btn {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn">← 返回</button>
+    
+    <div class="levels-container safe-area-content">
+        <h1 class="levels-title">🎮 选择关卡</h1>
+        <div class="levels-grid" id="levelsGrid">
+            <div class="level-card unlocked" data-level="1">
+                <span class="level-number">1</span>
+                <div class="star-rating">
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                </div>
+            </div>
+            <div class="level-card locked" data-level="2">
+                <span class="lock-icon">🔒</span>
+            </div>
+            <div class="level-card locked" data-level="3">
+                <span class="lock-icon">🔒</span>
+            </div>
+            <div class="level-card locked" data-level="4">
+                <span class="lock-icon">🔒</span>
+            </div>
+            <div class="level-card locked" data-level="5">
+                <span class="lock-icon">🔒</span>
+            </div>
+            <div class="level-card locked" data-level="6">
+                <span class="lock-icon">🔒</span>
+            </div>
+            <div class="level-card locked" data-level="7">
+                <span class="lock-icon">🔒</span>
+            </div>
+            <div class="level-card locked" data-level="8">
+                <span class="lock-icon">🔒</span>
+            </div>
+            <div class="level-card locked" data-level="9">
+                <span class="lock-icon">🔒</span>
+            </div>
+            <div class="level-card locked" data-level="10">
+                <span class="lock-icon">🔒</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script>
+        function goBack(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            window.location.href = 'index.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLevelProgress();
+            
+            document.querySelectorAll('.level-card.unlocked').forEach(card => {
+                const handleClick = (e) => {
+                    if (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }
+                    const level = card.dataset.level;
+                    localStorage.setItem('currentLevel', level);
+                    localStorage.setItem('battleTowers', JSON.stringify([]));
+                    window.location.href = `game.html?level=${level}`;
+                };
+                
+                card.addEventListener('click', handleClick);
+                card.addEventListener('touchend', handleClick);
+            });
+            
+            const backBtn = document.querySelector('.back-btn');
+            backBtn.addEventListener('click', goBack);
+            backBtn.addEventListener('touchend', goBack);
+        });
+
+        function loadLevelProgress() {
+            const maxUnlocked = parseInt(localStorage.getItem('maxUnlockedLevel') || '1', 10);
+            
+            document.querySelectorAll('.level-card').forEach((card, index) => {
+                const levelNum = index + 1;
+                if (levelNum <= maxUnlocked) {
+                    card.classList.remove('locked');
+                    card.classList.add('unlocked');
+                    card.innerHTML = `
+                        <span class="level-number">${levelNum}</span>
+                        <div class="star-rating">
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                            <span class="star">⭐</span>
+                        </div>
+                    `;
+                    
+                    card.addEventListener('click', (e) => {
+                        if (e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                        }
+                        const level = card.dataset.level;
+                        localStorage.setItem('currentLevel', level);
+                        localStorage.setItem('battleTowers', JSON.stringify([]));
+                        window.location.href = `game.html?level=${level}`;
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

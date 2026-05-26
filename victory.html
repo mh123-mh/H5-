@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>胜利 - 我是环境检察员</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .victory-container {
+            text-align: center;
+            padding: 32px 16px;
+            padding-top: calc(40px + env(safe-area-inset-top));
+            padding-bottom: calc(40px + env(safe-area-inset-bottom));
+            animation: fadeIn 0.5s ease-out;
+            min-height: 100vh;
+            min-height: 100dvh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .victory-emoji {
+            font-size: clamp(1.8rem, 10vw, 3rem);
+            animation: bounce 1s infinite;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .victory-title {
+            font-size: clamp(1rem, 5vw, 1.5rem);
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .victory-stars {
+            font-size: clamp(1rem, 5vw, 2rem);
+            margin-bottom: 12px;
+            animation: twinkle 1s infinite;
+            line-height: 1;
+        }
+
+        .star {
+            display: inline-block;
+            margin: 0 5px;
+            animation: twinkle 1s infinite;
+        }
+
+        .star:nth-child(2) { animation-delay: 0.3s; }
+        .star:nth-child(3) { animation-delay: 0.6s; }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 12px;
+            margin: 0 auto;
+            max-width: 280px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.5s ease-out 0.3s both;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .stat-value {
+            color: #4ecdc4;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+            animation: slideUp 0.5s ease-out 0.5s both;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            .btn-group {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .stats-card {
+                padding: 16px;
+                margin: 0 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="victory-container safe-area-content">
+        <div class="victory-emoji">🎉</div>
+        <h1 class="victory-title">恭喜你获得胜利!</h1>
+        
+        <div class="victory-stars">
+            <span class="star">⭐</span>
+            <span class="star">⭐</span>
+            <span class="star">⭐</span>
+        </div>
+
+        <div class="stats-card">
+            <div class="stat-item">
+                <span class="stat-label">通过波次</span>
+                <span class="stat-value" id="waves">5</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">剩余生命</span>
+                <span class="stat-value" id="lives">6</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">获得金币</span>
+                <span class="stat-value" id="gold">300</span>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" id="restartBtn">🔄 再来一局</button>
+            <button class="btn btn-secondary" id="homeBtn">🏠 返回主页</button>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script>
+        function loadStats() {
+            const result = localStorage.getItem('battleResult');
+            if (result) {
+                const data = JSON.parse(result);
+                document.getElementById('waves').textContent = data.waves || 5;
+                document.getElementById('lives').textContent = data.lives || 6;
+                document.getElementById('gold').textContent = data.gold || 300;
+            }
+        }
+
+        function restartGame(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            const level = localStorage.getItem('currentLevel') || '1';
+            window.location.href = 'game.html?level=' + level;
+        }
+
+        function goHome(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            window.location.href = 'index.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            
+            document.getElementById('restartBtn').addEventListener('click', restartGame);
+            document.getElementById('restartBtn').addEventListener('touchend', restartGame);
+            document.getElementById('homeBtn').addEventListener('click', goHome);
+            document.getElementById('homeBtn').addEventListener('touchend', goHome);
+        });
+    </script>
+</body>
+</html>

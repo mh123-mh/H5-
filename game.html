@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="touch-action" content="none">
+    <title>我是环境检察员 - 塔防游戏</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .status-bar {
+            min-height: 60px;
+            height: calc(60px + env(safe-area-inset-top));
+            padding-top: calc(env(safe-area-inset-top) + 10px);
+            background: var(--color-bg-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: calc(15px + env(safe-area-inset-left));
+            padding-right: calc(15px + env(safe-area-inset-right));
+            position: relative;
+            z-index: 1000;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .gold-panel {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-gold);
+            font-size: var(--font-size-md);
+            padding: 6px 12px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .life-panel {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .heart {
+            color: var(--color-life);
+            font-size: var(--font-size-lg);
+            transition: all var(--transition-fast);
+        }
+
+        .wave-panel {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--color-wave);
+            font-size: var(--font-size-md);
+            padding: 6px 12px;
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+        }
+
+        .start-btn {
+            height: 32px;
+            padding: 0 15px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            border: none;
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: var(--font-size-sm);
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+            transition: all var(--transition-fast);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        }
+
+        .game-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            padding-bottom: max(env(safe-area-inset-bottom), 20px);
+            box-sizing: border-box;
+        }
+
+        .left-panel {
+            width: 32%;
+            background: var(--color-bg-secondary);
+            padding: var(--spacing-sm);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--color-border);
+        }
+
+        .monster-title {
+            font-size: var(--font-size-sm);
+            color: var(--color-danger);
+            text-align: center;
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 6px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: var(--radius-sm);
+        }
+
+        .monster-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .monster-card {
+            background: var(--color-bg-primary);
+            border-radius: var(--radius-md);
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border: 1px solid var(--color-border);
+            transition: all var(--transition-fast);
+        }
+
+        .monster-card:hover {
+            border-color: var(--color-border-light);
+            transform: translateY(-2px);
+        }
+
+        .monster-emoji {
+            width: 32px;
+            height: 32px;
+        }
+
+        .monster-name {
+            font-size: var(--font-size-xs);
+            font-weight: bold;
+            color: var(--color-text-primary);
+        }
+
+        .monster-info {
+            font-size: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .monster-hp { color: var(--color-danger); }
+        .monster-speed { color: var(--color-warning); }
+        .monster-trait { color: var(--color-info); font-weight: bold; }
+
+        .center-panel {
+            flex: 1;
+            background: linear-gradient(180deg, #2d5a27 0%, #1e4a17 100%);
+            padding: var(--spacing-sm);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tower-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .tower-card {
+            background: var(--color-bg-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+
+        .tower-card.selected {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+        }
+
+        .tower-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .tower-emoji-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+        }
+
+        .tower-cannon {
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: cannonIdle 2s ease-in-out infinite;
+        }
+
+        .tower-cannon.basic { filter: hue-rotate(120deg) saturate(1.5); animation: cannonBasic 1.5s ease-in-out infinite; }
+        .tower-cannon.water { filter: hue-rotate(180deg) saturate(1.5); animation: cannonWater 1.2s ease-in-out infinite; }
+        .tower-cannon.light { filter: hue-rotate(50deg) saturate(2); animation: cannonLight 1s ease-in-out infinite; }
+        .tower-cannon.rainbow { animation: cannonRainbow 2s linear infinite; }
+        .tower-cannon.wind { filter: hue-rotate(200deg) saturate(1.3); animation: cannonWind 0.8s ease-in-out infinite; }
+        .tower-cannon.solar { filter: hue-rotate(30deg) saturate(2); animation: cannonSolar 1.8s ease-in-out infinite; }
+        .tower-cannon.purify { filter: hue-rotate(280deg) saturate(1.5); animation: cannonPurify 1.3s ease-in-out infinite; }
+        .tower-cannon.thunder { filter: hue-rotate(250deg) saturate(2); animation: cannonThunder 0.5s ease-in-out infinite; }
+
+        @keyframes cannonIdle { 0%, 100% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(-2deg) scale(1.02); } }
+        @keyframes cannonBasic { 0%, 100% { transform: rotate(-5deg) scale(1); } 50% { transform: rotate(5deg) scale(1.05); } }
+        @keyframes cannonWater { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-3px) rotate(3deg); } }
+        @keyframes cannonLight { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes cannonRainbow { 0% { filter: hue-rotate(0deg); } 14% { filter: hue-rotate(60deg); } 28% { filter: hue-rotate(120deg); } 42% { filter: hue-rotate(180deg); } 57% { filter: hue-rotate(240deg); } 71% { filter: hue-rotate(300deg); } 100% { filter: hue-rotate(360deg); } }
+        @keyframes cannonWind { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
+        @keyframes cannonSolar { 0%, 100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.08) rotate(2deg); } }
+        @keyframes cannonPurify { 0%, 100% { transform: translateY(0); } 25% { transform: translateY(-2px) scale(1.02); } 50% { transform: translateY(0) scale(0.98); } 75% { transform: translateY(2px) scale(1.02); } }
+        @keyframes cannonThunder { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.1); } }
+
+        .tower-name {
+            font-size: var(--font-size-xs);
+            font-weight: bold;
+            color: var(--color-text-primary);
+        }
+
+        .tower-cost {
+            font-size: 10px;
+            color: var(--color-gold);
+        }
+
+        .tower-damage {
+            font-size: 10px;
+            color: var(--color-info);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .bottom-towers {
+            display: flex;
+            gap: 8px;
+            margin-top: var(--spacing-sm);
+        }
+
+        .tower-hint {
+            text-align: center;
+            color: var(--color-gold);
+            font-size: var(--font-size-sm);
+            margin-bottom: 6px;
+            padding: 4px;
+            background: rgba(139, 105, 20, 0.3);
+            border-radius: var(--radius-sm);
+        }
+
+        .bottom-slot {
+            flex: 1;
+            height: 60px;
+            background: linear-gradient(145deg, #8b6914 0%, #6b4904 100%);
+            border-radius: var(--radius-md);
+            border: 2px dashed #c0a030;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .bottom-slot:hover {
+            background: linear-gradient(145deg, #9b7924 0%, #7b5914 100%);
+            border-color: var(--color-accent);
+        }
+
+        .bottom-slot.locked {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .bottom-slot.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+        }
+
+        .right-panel {
+            width: 18%;
+            background: linear-gradient(180deg, #2a3a20 0%, #1f2f15 50%, #182510 100%);
+            padding: 8px;
+            border-left: 3px solid #3d5a27;
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            box-shadow: inset -2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .wall-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 4px;
+            height: 100%;
+        }
+
+        .wall-cell {
+            background: linear-gradient(145deg, #4a5a3d 0%, #3a4a2d 100%);
+            border: 2px solid #2d3d20;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all var(--transition-fast);
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.08), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .wall-cell::before {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        .wall-cell:hover {
+            background: linear-gradient(145deg, #5a6a4d 0%, #4a5a3d 100%);
+            transform: scale(1.03);
+            border-color: #5a7a4d;
+        }
+
+        .wall-cell.placed {
+            background: linear-gradient(145deg, #2a4a20 0%, #1a3a10 100%);
+            border-color: var(--color-primary);
+            box-shadow: inset 0 2px 4px rgba(39, 174, 96, 0.25), inset 0 -2px 4px rgba(0,0,0,0.4), 0 0 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 10px;
+            left: calc(15px + env(safe-area-inset-left));
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: var(--font-size-xs);
+            transition: all var(--transition-fast);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+            
+            .left-panel { 
+                width: 100%; 
+                border-right: none;
+                border-bottom: 1px solid var(--color-border);
+                max-height: 200px;
+            }
+            
+            .monster-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+            
+            .center-panel {
+                flex: 1;
+                min-height: 250px;
+            }
+            
+            .tower-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+            
+            .right-panel { 
+                width: 100%; 
+                border-left: none;
+                border-top: 3px solid #3d5a27;
+                border-radius: var(--radius-lg) 0 0 0;
+            }
+            
+            .wall-grid {
+                grid-template-columns: repeat(5, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                height: 80px;
+            }
+            
+            .tower-emoji-container { width: 30px; height: 30px; }
+            .tower-cannon { font-size: 20px; }
+            
+            .bottom-slot { height: 45px; font-size: 18px; }
+            
+            .monster-card {
+                padding: 6px;
+            }
+            
+            .monster-emoji {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .monster-name, .tower-name {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="life-panel">
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+        </div>
+        <div class="wave-panel">🌊 第1波</div>
+        <button class="start-btn" id="startBtn">🚀 开始进攻</button>
+    </div>
+
+    <div class="game-container">
+        <div class="left-panel">
+            <div class="monster-title">
+                <span>👹</span>
+                <span>怪兽信息</span>
+            </div>
+            <div class="monster-grid">
+                <div class="monster-card">
+                    <svg class="monster-emoji" viewBox="0 0 60 60">
+                        <rect x="14" y="18" width="32" height="28" fill="#707070"/>
+                        <rect x="12" y="14" width="36" height="6" fill="#505050"/>
+                        <rect x="20" y="22" width="4" height="10" fill="#404040"/>
+                        <rect x="28" y="22" width="4" height="10" fill="#404040"/>
+                        <rect x="36" y="22" width="4" height="10" fill="#404040"/>
+                        <rect x="22" y="26" width="4" height="4" fill="#ffcc00"/>
+                        <rect x="34" y="24" width="4" height="4" fill="#ff6600"/>
+                        <rect x="20" y="34" width="6" height="6" fill="white"/>
+                        <rect x="22" y="36" width="2" height="2" fill="#333"/>
+                        <rect x="34" y="34" width="6" height="6" fill="white"/>
+                        <rect x="36" y="36" width="2" height="2" fill="#333"/>
+                        <rect x="24" y="44" width="4" height="2" fill="#404040"/>
+                        <rect x="28" y="46" width="4" height="2" fill="#404040"/>
+                        <rect x="32" y="44" width="4" height="2" fill="#404040"/>
+                    </svg>
+                    <div class="monster-name">垃圾怪</div>
+                    <div class="monster-info">
+                        <span class="monster-hp">❤️ HP: 50</span>
+                        <span class="monster-speed">⚡ 速度: 快</span>
+                        <span class="monster-trait">🗑️ 普通怪物</span>
+                    </div>
+                </div>
+                <div class="monster-card">
+                    <svg class="monster-emoji" viewBox="0 0 60 60">
+                        <rect x="4" y="22" width="8" height="16" fill="#d0d0d0"/>
+                        <rect x="48" y="24" width="8" height="14" fill="#d0d0d0"/>
+                        <rect x="18" y="20" width="24" height="22" fill="#a0a0a0"/>
+                        <rect x="22" y="24" width="16" height="14" fill="#c0c0c0"/>
+                        <rect x="22" y="26" width="6" height="6" fill="white"/>
+                        <rect x="24" y="28" width="2" height="2" fill="#555"/>
+                        <rect x="32" y="26" width="6" height="6" fill="white"/>
+                        <rect x="34" y="28" width="2" height="2" fill="#555"/>
+                        <rect x="26" y="38" width="8" height="4" fill="#808080"/>
+                    </svg>
+                    <div class="monster-name">废气怪</div>
+                    <div class="monster-info">
+                        <span class="monster-hp">❤️ HP: 80</span>
+                        <span class="monster-speed">⚡ 速度: 中</span>
+                        <span class="monster-trait">💨 飞行单位</span>
+                    </div>
+                </div>
+                <div class="monster-card">
+                    <svg class="monster-emoji" viewBox="0 0 60 60">
+                        <rect x="16" y="14" width="28" height="30" fill="#4a4a4a"/>
+                        <rect x="18" y="16" width="24" height="26" fill="#6a6a6a"/>
+                        <rect x="20" y="20" width="8" height="10" fill="#333"/>
+                        <rect x="32" y="20" width="8" height="10" fill="#333"/>
+                        <rect x="24" y="22" width="4" height="6" fill="#ff4444"/>
+                        <rect x="32" y="22" width="4" height="6" fill="#ff4444"/>
+                        <rect x="28" y="32" width="4" height="6" fill="#333"/>
+                    </svg>
+                    <div class="monster-name">污染王</div>
+                    <div class="monster-info">
+                        <span class="monster-hp">❤️ HP: 150</span>
+                        <span class="monster-speed">⚡ 速度: 慢</span>
+                        <span class="monster-trait">💀 高伤害</span>
+                    </div>
+                </div>
+                <div class="monster-card">
+                    <svg class="monster-emoji" viewBox="0 0 60 60">
+                        <rect x="6" y="18" width="8" height="6" fill="#30a858"/>
+                        <rect x="46" y="22" width="8" height="6" fill="#30a858"/>
+                        <rect x="18" y="18" width="24" height="26" fill="#50c878"/>
+                        <rect x="22" y="22" width="16" height="18" fill="#80e898"/>
+                        <rect x="22" y="24" width="6" height="6" fill="white"/>
+                        <rect x="24" y="26" width="2" height="2" fill="#106040"/>
+                        <rect x="32" y="24" width="6" height="6" fill="white"/>
+                        <rect x="34" y="26" width="2" height="2" fill="#106040"/>
+                        <rect x="26" y="36" width="8" height="4" fill="#30a858"/>
+                    </svg>
+                    <div class="monster-name">病毒怪</div>
+                    <div class="monster-info">
+                        <span class="monster-hp">❤️ HP: 200</span>
+                        <span class="monster-speed">⚡ 速度: 中</span>
+                        <span class="monster-trait">🦠 飞行+持续伤害</span>
+                    </div>
+                </div>
+                <div class="monster-card">
+                    <svg class="monster-emoji" viewBox="0 0 60 60">
+                        <rect x="18" y="26" width="24" height="24" fill="#ffe4e1"/>
+                        <rect x="20" y="28" width="20" height="20" fill="#fff0f0"/>
+                        <rect x="24" y="16" width="12" height="14" fill="#e8d4d1"/>
+                        <rect x="26" y="14" width="8" height="6" fill="#d4c4c1"/>
+                        <rect x="22" y="32" width="6" height="6" fill="white"/>
+                        <rect x="24" y="34" width="2" height="2" fill="#ff6b6b"/>
+                        <rect x="32" y="32" width="6" height="6" fill="white"/>
+                        <rect x="34" y="34" width="2" height="2" fill="#ff6b6b"/>
+                        <rect x="26" y="44" width="8" height="4" fill="#e8d4d1"/>
+                    </svg>
+                    <div class="monster-name">塑料怪</div>
+                    <div class="monster-info">
+                        <span class="monster-hp">❤️ HP: 100</span>
+                        <span class="monster-speed">⚡ 速度: 快</span>
+                        <span class="monster-trait">🧴 数量多</span>
+                    </div>
+                </div>
+                <div class="monster-card">
+                    <svg class="monster-emoji" viewBox="0 0 60 60">
+                        <rect x="14" y="16" width="32" height="32" fill="#4a90d9"/>
+                        <rect x="16" y="18" width="28" height="28" fill="#7ab0f9"/>
+                        <rect x="26" y="10" width="8" height="8" fill="#3a70b9"/>
+                        <rect x="20" y="24" width="20" height="4" fill="#ffd700"/>
+                        <rect x="20" y="32" width="20" height="4" fill="#ffd700"/>
+                        <rect x="20" y="28" width="6" height="6" fill="white"/>
+                        <rect x="22" y="30" width="2" height="2" fill="#ffd700"/>
+                        <rect x="34" y="28" width="6" height="6" fill="white"/>
+                        <rect x="36" y="30" width="2" height="2" fill="#ffd700"/>
+                        <rect x="28" y="42" width="4" height="4" fill="#3a70b9"/>
+                    </svg>
+                    <div class="monster-name">电池怪</div>
+                    <div class="monster-info">
+                        <span class="monster-hp">❤️ HP: 120</span>
+                        <span class="monster-speed">⚡ 速度: 中</span>
+                        <span class="monster-trait">🔋 减速抵抗</span>
+                    </div>
+                </div>
+                <div class="monster-card">
+                    <svg class="monster-emoji" viewBox="0 0 60 60">
+                        <rect x="16" y="26" width="28" height="24" fill="#2c2c2c"/>
+                        <rect x="18" y="28" width="24" height="20" fill="#4c4c4c"/>
+                        <rect x="18" y="22" width="24" height="8" fill="#2c2c2c"/>
+                        <rect x="20" y="20" width="20" height="4" fill="#4c4c4c"/>
+                        <rect x="20" y="32" width="8" height="8" fill="white"/>
+                        <rect x="22" y="34" width="4" height="4" fill="#ff8c00"/>
+                        <rect x="32" y="32" width="8" height="8" fill="white"/>
+                        <rect x="34" y="34" width="4" height="4" fill="#ff8c00"/>
+                        <rect x="26" y="46" width="8" height="4" fill="#1c1c1c"/>
+                    </svg>
+                    <div class="monster-name">油污怪</div>
+                    <div class="monster-info">
+                        <span class="monster-hp">❤️ HP: 180</span>
+                        <span class="monster-speed">⚡ 速度: 慢</span>
+                        <span class="monster-trait">🛢️ 高防御</span>
+                    </div>
+                </div>
+                <div class="monster-card">
+                    <svg class="monster-emoji" viewBox="0 0 60 60">
+                        <rect x="6" y="16" width="12" height="12" fill="#7b1fa2"/>
+                        <rect x="42" y="18" width="12" height="12" fill="#7b1fa2"/>
+                        <rect x="18" y="20" width="24" height="26" fill="#9932cc"/>
+                        <rect x="22" y="24" width="16" height="18" fill="#ba55d3"/>
+                        <rect x="22" y="26" width="6" height="6" fill="white"/>
+                        <rect x="24" y="28" width="2" height="2" fill="#00ff00"/>
+                        <rect x="32" y="26" width="6" height="6" fill="white"/>
+                        <rect x="34" y="28" width="2" height="2" fill="#00ff00"/>
+                        <rect x="26" y="38" width="8" height="4" fill="#7b1fa2"/>
+                        <rect x="28" y="8" width="4" height="4" fill="#00ff00"/>
+                    </svg>
+                    <div class="monster-name">辐射怪</div>
+                    <div class="monster-info">
+                        <span class="monster-hp">❤️ HP: 250</span>
+                        <span class="monster-speed">⚡ 速度: 慢</span>
+                        <span class="monster-trait">☢️ 范围伤害</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="center-panel">
+            <div class="tower-grid">
+                <div class="tower-card" data-tower="basic" data-cost="50">
+                    <span class="tower-emoji-container">
+                        <span class="tower-cannon basic">
+                            <svg width="45" height="45" viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="88" rx="35" ry="8" fill="#3d5a3d"/>
+                                <ellipse cx="50" cy="82" rx="30" ry="7" fill="#4a7a4a"/>
+                                <circle cx="50" cy="60" r="20" fill="#5a8a5a"/>
+                                <circle cx="50" cy="60" r="16" fill="#7ab87a"/>
+                                <rect x="52" y="54" width="45" height="12" rx="2" fill="#4a7a4a"/>
+                                <circle cx="50" cy="60" r="6" fill="#5a8a5a"/>
+                                <circle cx="95" cy="60" r="5" fill="#9cd99c"/>
+                                <circle cx="98" cy="60" r="3" fill="#3d5a3d"/>
+                                <circle cx="50" cy="60" r="6" fill="#9cd99c"/>
+                                <ellipse cx="35" cy="50" rx="6" ry="12" fill="#2d8a2d" transform="rotate(-30 35 50)"/>
+                                <ellipse cx="65" cy="50" rx="6" ry="12" fill="#2d8a2d" transform="rotate(30 65 50)"/>
+                            </svg>
+                        </span>
+                    </span>
+                    <div class="tower-name">基础塔</div>
+                    <div class="tower-cost">💰 50</div>
+                    <div class="tower-damage">🌿 射线攻击</div>
+                </div>
+                <div class="tower-card" data-tower="water" data-cost="80">
+                    <span class="tower-emoji-container">
+                        <span class="tower-cannon water">
+                            <svg width="45" height="45" viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="88" rx="35" ry="8" fill="#2a5a8a"/>
+                                <ellipse cx="50" cy="82" rx="30" ry="7" fill="#3a7ab8"/>
+                                <circle cx="50" cy="60" r="20" fill="#4a9ae8"/>
+                                <circle cx="50" cy="60" r="16" fill="#7ac8ff"/>
+                                <rect x="52" y="54" width="45" height="12" rx="2" fill="#3a7ab8"/>
+                                <circle cx="50" cy="60" r="6" fill="#4a9ae8"/>
+                                <circle cx="95" cy="60" r="5" fill="#a8e0ff"/>
+                                <circle cx="98" cy="60" r="3" fill="#2a5a8a"/>
+                                <circle cx="50" cy="60" r="6" fill="#a8e0ff"/>
+                                <path d="M50 40 L48 35 L50 30 L52 35 Z" fill="#d8f0ff"/>
+                                <circle cx="50" cy="32" r="2" fill="#ffffff"/>
+                            </svg>
+                        </span>
+                    </span>
+                    <div class="tower-name">净水塔</div>
+                    <div class="tower-cost">💰 80</div>
+                    <div class="tower-damage">💧 激光攻击 | 减速</div>
+                </div>
+                <div class="tower-card" data-tower="light" data-cost="120">
+                    <span class="tower-emoji-container">
+                        <span class="tower-cannon light">
+                            <svg width="45" height="45" viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="88" rx="35" ry="8" fill="#8a6a2a"/>
+                                <ellipse cx="50" cy="82" rx="30" ry="7" fill="#aa8a3a"/>
+                                <circle cx="50" cy="60" r="20" fill="#cca84a"/>
+                                <circle cx="50" cy="60" r="16" fill="#ffd85a"/>
+                                <rect x="52" y="54" width="45" height="12" rx="2" fill="#aa8a3a"/>
+                                <circle cx="50" cy="60" r="6" fill="#cca84a"/>
+                                <circle cx="95" cy="60" r="5" fill="#ffe88a"/>
+                                <circle cx="98" cy="60" r="3" fill="#8a6a2a"/>
+                                <circle cx="50" cy="60" r="6" fill="#ffe88a"/>
+                                <line x1="50" y1="35" x2="50" y2="28" stroke="#ffd85a" stroke-width="3"/>
+                                <line x1="50" y1="85" x2="50" y2="92" stroke="#ffd85a" stroke-width="3"/>
+                                <line x1="35" y1="50" x2="28" y2="50" stroke="#ffd85a" stroke-width="3"/>
+                                <line x1="65" y1="50" x2="72" y2="50" stroke="#ffd85a" stroke-width="3"/>
+                            </svg>
+                        </span>
+                    </span>
+                    <div class="tower-name">光能塔</div>
+                    <div class="tower-cost">💰 120</div>
+                    <div class="tower-damage">☀️ 抛物线攻击</div>
+                </div>
+                <div class="tower-card" data-tower="rainbow" data-cost="180">
+                    <span class="tower-emoji-container">
+                        <span class="tower-cannon rainbow">
+                            <svg width="45" height="45" viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="88" rx="35" ry="8" fill="url(#rainbowBase)"/>
+                                <ellipse cx="50" cy="82" rx="30" ry="7" fill="url(#rainbowBase)"/>
+                                <circle cx="50" cy="60" r="20" fill="url(#rainbowBody)"/>
+                                <circle cx="50" cy="60" r="16" fill="url(#rainbowAccent)"/>
+                                <rect x="52" y="54" width="45" height="12" rx="2" fill="url(#rainbowCannon)"/>
+                                <circle cx="95" cy="60" r="5" fill="#ff6b6b"/>
+                                <circle cx="98" cy="60" r="3" fill="#ffd93d"/>
+                                <circle cx="50" cy="60" r="6" fill="url(#rainbowCenter)"/>
+                                <defs>
+                                    <linearGradient id="rainbowBase" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#ff6b6b"/><stop offset="25%" style="stop-color:#ffd93d"/><stop offset="50%" style="stop-color:#6bcb77"/><stop offset="75%" style="stop-color:#4d96ff"/><stop offset="100%" style="stop-color:#a55eea"/>
+                                    </linearGradient>
+                                    <linearGradient id="rainbowBody" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#ff6b6b"/><stop offset="25%" style="stop-color:#ffd93d"/><stop offset="50%" style="stop-color:#6bcb77"/><stop offset="75%" style="stop-color:#4d96ff"/><stop offset="100%" style="stop-color:#a55eea"/>
+                                    </linearGradient>
+                                    <linearGradient id="rainbowAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#ff8a8a"/><stop offset="25%" style="stop-color:#ffe96d"/><stop offset="50%" style="stop-color:#8bea98"/><stop offset="75%" style="stop-color:#6da6ff"/><stop offset="100%" style="stop-color:#c57eea"/>
+                                    </linearGradient>
+                                    <linearGradient id="rainbowCannon" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#a55eea"/><stop offset="25%" style="stop-color:#4d96ff"/><stop offset="50%" style="stop-color:#6bcb77"/><stop offset="75%" style="stop-color:#ffd93d"/><stop offset="100%" style="stop-color:#ff6b6b"/>
+                                    </linearGradient>
+                                    <linearGradient id="rainbowCenter" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#ffd93d"/><stop offset="50%" style="stop-color:#6bcb77"/><stop offset="100%" style="stop-color:#4d96ff"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </span>
+                    </span>
+                    <div class="tower-name">彩虹塔</div>
+                    <div class="tower-cost">💰 180</div>
+                    <div class="tower-damage">🌈 穿透伤害</div>
+                </div>
+                <div class="tower-card" data-tower="wind" data-cost="150">
+                    <span class="tower-emoji-container">
+                        <span class="tower-cannon wind">
+                            <svg width="45" height="45" viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="88" rx="35" ry="8" fill="#3a7a8a"/>
+                                <ellipse cx="50" cy="82" rx="30" ry="7" fill="#4a9aae"/>
+                                <circle cx="50" cy="60" r="20" fill="#5ab8cc"/>
+                                <circle cx="50" cy="60" r="16" fill="#8ae0f0"/>
+                                <rect x="52" y="54" width="45" height="12" rx="2" fill="#4a9aae"/>
+                                <circle cx="50" cy="60" r="6" fill="#5ab8cc"/>
+                                <circle cx="95" cy="60" r="5" fill="#b8f0f8"/>
+                                <circle cx="98" cy="60" r="3" fill="#3a7a8a"/>
+                                <circle cx="50" cy="60" r="6" fill="#b8f0f8"/>
+                                <path d="M40 52 Q50 45 50 52 Q50 59 40 52" fill="none" stroke="#3a7a8a" stroke-width="2"/>
+                                <path d="M60 52 Q50 45 50 52 Q50 59 60 52" fill="none" stroke="#3a7a8a" stroke-width="2"/>
+                            </svg>
+                        </span>
+                    </span>
+                    <div class="tower-name">风力塔</div>
+                    <div class="tower-cost">💰 150</div>
+                    <div class="tower-damage">🌀 双子弹穿透</div>
+                </div>
+                <div class="tower-card" data-tower="solar" data-cost="200">
+                    <span class="tower-emoji-container">
+                        <span class="tower-cannon solar">
+                            <svg width="45" height="45" viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="88" rx="35" ry="8" fill="#9a7a2a"/>
+                                <ellipse cx="50" cy="82" rx="30" ry="7" fill="#ba9a3a"/>
+                                <circle cx="50" cy="60" r="20" fill="#dabc4a"/>
+                                <circle cx="50" cy="60" r="16" fill="#fff06a"/>
+                                <rect x="52" y="54" width="45" height="12" rx="2" fill="#ba9a3a"/>
+                                <circle cx="50" cy="60" r="6" fill="#dabc4a"/>
+                                <circle cx="95" cy="60" r="5" fill="#fff89a"/>
+                                <circle cx="98" cy="60" r="3" fill="#9a7a2a"/>
+                                <circle cx="50" cy="60" r="6" fill="#fff89a"/>
+                                <polygon points="50,25 52,32 50,30 48,32" fill="#ffd03a"/>
+                                <polygon points="50,95 52,88 50,90 48,88" fill="#ffd03a"/>
+                                <polygon points="25,50 32,52 30,50 32,48" fill="#ffd03a"/>
+                                <polygon points="95,50 88,52 90,50 88,48" fill="#ffd03a"/>
+                            </svg>
+                        </span>
+                    </span>
+                    <div class="tower-name">太阳能塔</div>
+                    <div class="tower-cost">💰 200</div>
+                    <div class="tower-damage">🔆 炸弹范围</div>
+                </div>
+                <div class="tower-card" data-tower="purify" data-cost="250">
+                    <span class="tower-emoji-container">
+                        <span class="tower-cannon purify">
+                            <svg width="45" height="45" viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="88" rx="35" ry="8" fill="#5a3a7a"/>
+                                <ellipse cx="50" cy="82" rx="30" ry="7" fill="#7a5a9a"/>
+                                <circle cx="50" cy="60" r="20" fill="#9a7aba"/>
+                                <circle cx="50" cy="60" r="16" fill="#c9a8e8"/>
+                                <rect x="52" y="54" width="45" height="12" rx="2" fill="#7a5a9a"/>
+                                <circle cx="50" cy="60" r="6" fill="#9a7aba"/>
+                                <circle cx="95" cy="60" r="5" fill="#e8c8f8"/>
+                                <circle cx="98" cy="60" r="3" fill="#5a3a7a"/>
+                                <circle cx="50" cy="60" r="6" fill="#e8c8f8"/>
+                                <rect x="46" y="42" width="8" height="12" fill="#c9a8e8" rx="2"/>
+                                <rect x="47" y="40" width="6" height="4" fill="#5a3a7a"/>
+                            </svg>
+                        </span>
+                    </span>
+                    <div class="tower-name">净化塔</div>
+                    <div class="tower-cost">💰 250</div>
+                    <div class="tower-damage">🧪 溅射+减速</div>
+                </div>
+                <div class="tower-card" data-tower="thunder" data-cost="300">
+                    <span class="tower-emoji-container">
+                        <span class="tower-cannon thunder">
+                            <svg width="45" height="45" viewBox="0 0 100 100">
+                                <ellipse cx="50" cy="88" rx="35" ry="8" fill="#2a2a4a"/>
+                                <ellipse cx="50" cy="82" rx="30" ry="7" fill="#3a3a6a"/>
+                                <circle cx="50" cy="60" r="20" fill="#4a4a8a"/>
+                                <circle cx="50" cy="60" r="16" fill="#6a6aba"/>
+                                <rect x="52" y="54" width="45" height="12" rx="2" fill="#3a3a6a"/>
+                                <circle cx="50" cy="60" r="6" fill="#4a4a8a"/>
+                                <circle cx="95" cy="60" r="5" fill="#8a8adc"/>
+                                <circle cx="98" cy="60" r="3" fill="#2a2a4a"/>
+                                <circle cx="50" cy="60" r="6" fill="#8a8adc"/>
+                                <polygon points="48 45 46 52 52 52 50 58 54 50 48 50" fill="#ffd03a"/>
+                            </svg>
+                        </span>
+                    </span>
+                    <div class="tower-name">雷电塔</div>
+                    <div class="tower-cost">💰 300</div>
+                    <div class="tower-damage">⚡ 闪电范围</div>
+                </div>
+            </div>
+            <div class="tower-hint">请选择你需要的防御塔</div>
+            <div class="bottom-towers">
+                <div class="bottom-slot"></div>
+                <div class="bottom-slot"></div>
+                <div class="bottom-slot"></div>
+                <div class="bottom-slot"></div>
+                <div class="bottom-slot locked"></div>
+                <div class="bottom-slot locked"></div>
+                <div class="bottom-slot locked"></div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="wall-grid">
+                <div class="wall-cell" data-wall="0"></div>
+                <div class="wall-cell" data-wall="1"></div>
+                <div class="wall-cell" data-wall="2"></div>
+                <div class="wall-cell" data-wall="3"></div>
+                <div class="wall-cell" data-wall="4"></div>
+                <div class="wall-cell" data-wall="5"></div>
+                <div class="wall-cell" data-wall="6"></div>
+                <div class="wall-cell" data-wall="7"></div>
+                <div class="wall-cell" data-wall="8"></div>
+                <div class="wall-cell" data-wall="9"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script>
+
+        let selectedTower = null;
+        let placedTowers = 0;
+        const maxTowers = 4;
+        let gold = 300; // 初始金币
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从URL获取关卡参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const level = urlParams.get('level') || '1';
+            localStorage.setItem('currentLevel', level);
+            
+            // 从localStorage获取金币
+            const savedGold = localStorage.getItem('currentGold');
+            if (savedGold !== null) {
+                gold = parseInt(savedGold, 10);
+            }
+            
+            document.querySelectorAll('.tower-card').forEach(card => {
+                card.addEventListener('click', handleTowerSelect);
+                card.addEventListener('touchend', handleTowerSelect);
+            });
+
+            document.querySelectorAll('.bottom-slot').forEach(slot => {
+                slot.addEventListener('click', handleSlotClick);
+                slot.addEventListener('touchend', handleSlotClick);
+            });
+        });
+
+        function handleTowerSelect(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            
+            const card = e.currentTarget;
+            if (card.classList.contains('used') || card.classList.contains('locked')) return;
+
+            document.querySelectorAll('.tower-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedTower = card.dataset.tower;
+        }
+
+        function handleSlotClick(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            
+            const slot = e.currentTarget;
+            if (slot.classList.contains('locked')) return;
+
+            if (slot.dataset.tower) {
+                const towerType = slot.dataset.tower;
+                
+                slot.innerHTML = '';
+                slot.dataset.tower = '';
+                document.querySelector(`.tower-card[data-tower="${towerType}"]`).classList.remove('used');
+                placedTowers--;
+                selectedTower = null;
+            } else if (selectedTower && placedTowers < maxTowers) {
+                slot.innerHTML = `<span style="font-size: 24px;">${getTowerEmoji(selectedTower)}</span>`;
+                slot.dataset.tower = selectedTower;
+                document.querySelector(`.tower-card[data-tower="${selectedTower}"]`).classList.add('used');
+                placedTowers++;
+                selectedTower = null;
+            }
+        }
+
+        function getTowerEmoji(towerType) {
+            const emojis = {
+                'basic': '🌿', 'water': '💧', 'light': '☀️', 'rainbow': '🌈',
+                'wind': '🌀', 'solar': '🔆', 'purify': '🧪', 'thunder': '⚡'
+            };
+            return emojis[towerType] || '🏰';
+        }
+
+        function handleStartGame(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            
+            // 保存金币
+            localStorage.setItem('currentGold', gold.toString());
+            
+            const slots = document.querySelectorAll('.bottom-slot');
+            const towers = [];
+            slots.forEach(slot => {
+                towers.push(slot.dataset.tower || '');
+            });
+            localStorage.setItem('battleTowers', JSON.stringify(towers));
+            
+            window.location.href = 'battle.html';
+        }
+        
+        document.getElementById('startBtn').addEventListener('click', handleStartGame);
+        document.getElementById('startBtn').addEventListener('touchend', handleStartGame);
+    </script>
+</body>
+</html>

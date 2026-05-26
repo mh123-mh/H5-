@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我是环境检察员</title>
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .game-header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .game-title {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            color: var(--color-primary);
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+            margin-bottom: 15px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .game-subtitle {
+            font-size: clamp(0.8rem, 3vw, 1.2rem);
+            color: var(--color-text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .start-section {
+            text-align: center;
+            padding: 40px 20px calc(60px + env(safe-area-inset-bottom));
+            animation: slideUp 0.8s ease-out 0.2s both;
+            margin-bottom: auto;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #startBtn {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #startBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.6);
+        }
+
+        #startBtn:active {
+            transform: scale(0.98);
+        }
+
+        #fullscreenBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        #fullscreenBtn:hover {
+            transform: scale(1.05);
+        }
+
+        .game-footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            animation: slideUp 0.8s ease-out 0.4s both;
+        }
+
+        .eco-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .eco-icons span {
+            animation: bounce 1s infinite;
+        }
+
+        .eco-icons span:nth-child(1) { animation-delay: 0s; }
+        .eco-icons span:nth-child(2) { animation-delay: 0.1s; }
+        .eco-icons span:nth-child(3) { animation-delay: 0.2s; }
+        .eco-icons span:nth-child(4) { animation-delay: 0.3s; }
+        .eco-icons span:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(74, 222, 128, 0.5); }
+            to { text-shadow: 0 0 40px rgba(74, 222, 128, 0.8); }
+        }
+
+        @media (max-width: 768px) {
+            .game-header {
+                padding: 20px 10px 10px;
+            }
+
+            .start-section {
+                padding: 15px 10px 60px;
+            }
+
+            #startBtn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+
+            #fullscreenBtn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .game-footer {
+                padding: 10px;
+                font-size: 0.7rem;
+            }
+
+            .eco-icons {
+                gap: 10px;
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+
+            .game-title {
+                margin-bottom: 8px;
+            }
+
+            .game-subtitle {
+                margin-bottom: 10px;
+            }
+        }
+
+        /* 横屏模式优化 */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .game-header {
+                padding: 10px 20px 5px;
+            }
+
+            .game-title {
+                font-size: clamp(1.5rem, 6vw, 2rem);
+                margin-bottom: 5px;
+            }
+
+            .game-subtitle {
+                display: none;
+            }
+
+            .eco-icons {
+                margin-bottom: 5px;
+                font-size: 0.9rem;
+            }
+
+            .start-section {
+                padding: 10px 20px 50px;
+            }
+
+            .btn-group {
+                gap: 10px;
+            }
+
+            #startBtn {
+                padding: 8px 25px;
+                font-size: 0.9rem;
+            }
+
+            #fullscreenBtn {
+                padding: 6px 15px;
+                font-size: 0.8rem;
+            }
+
+            .game-footer {
+                padding: 5px;
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container safe-area-content">
+        <header class="game-header">
+            <div class="eco-icons">
+                <span>🌱</span>
+                <span>🌿</span>
+                <span>🌍</span>
+                <span>💧</span>
+                <span>☀️</span>
+            </div>
+            <h1 class="game-title">🌍 我是环境检察员</h1>
+            <p class="game-subtitle">保护环境，人人有责！找出所有污染源，守护我们的地球家园</p>
+        </header>
+
+        <div class="start-section">
+            <div class="btn-group">
+                <button id="startBtn">🚀 开始游戏</button>
+            </div>
+        </div>
+
+        <footer class="game-footer">
+            <p>🌱 保护环境，从我做起 | 我是环境检察员小游戏</p>
+        </footer>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script>
+        function startGame(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            window.location.href = 'levels.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const startBtn = document.getElementById('startBtn');
+            startBtn.addEventListener('click', startGame);
+            startBtn.addEventListener('touchend', startGame);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+:root {
+    --color-primary: #22c55e;
+    --color-primary-dark: #16a34a;
+    --color-primary-light: #4ade80;
+    --color-secondary: #3b82f6;
+    --color-secondary-dark: #2563eb;
+    --color-secondary-light: #60a5fa;
+    --color-accent: #facc15;
+    --color-accent-dark: #eab308;
+    --color-accent-light: #fde047;
+    --color-danger: #ef4444;
+    --color-danger-dark: #dc2626;
+    --color-danger-light: #f87171;
+    --color-warning: #f97316;
+    --color-success: #22c55e;
+    --color-info: #06b6d4;
+    
+    --color-bg-primary: #1e1b4b;
+    --color-bg-secondary: #312e81;
+    --color-bg-tertiary: #4c1d95;
+    --color-bg-card: rgba(76, 29, 149, 0.6);
+    
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #e0e7ff;
+    --color-text-muted: #a5b4fc;
+    --color-text-dark: #1e1b4b;
+    
+    --color-border: rgba(255, 255, 255, 0.25);
+    --color-border-light: rgba(255, 255, 255, 0.4);
+    
+    --color-gold: #facc15;
+    --color-life: #ef4444;
+    --color-wave: #06b6d4;
+    
+    --color-tower-basic: #22c55e;
+    --color-tower-water: #06b6d4;
+    --color-tower-light: #fbbf24;
+    --color-tower-rainbow: #ec4899;
+    --color-tower-wind: #0ea5e9;
+    --color-tower-solar: #f59e0b;
+    --color-tower-purify: #8b5cf6;
+    --color-tower-thunder: #6366f1;
+    
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-glow-primary: 0 0 25px rgba(34, 197, 94, 0.6);
+    --shadow-glow-danger: 0 0 25px rgba(239, 68, 68, 0.6);
+    --shadow-glow-accent: 0 0 25px rgba(250, 204, 21, 0.6);
+    
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 50px;
+    
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    --font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+    
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    
+    --font-size-xs: 10px;
+    --font-size-sm: 12px;
+    --font-size-md: 14px;
+    --font-size-lg: 16px;
+    --font-size-xl: 20px;
+    --font-size-xxl: 24px;
+    --font-size-title: 32px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+html {
+    background: #1e1b4b;
+}
+
+body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    background: linear-gradient(135deg, var(--color-bg-primary, #1e1b4b) 0%, var(--color-bg-secondary, #312e81) 50%, var(--color-bg-tertiary, #4c1d95) 100%);
+    color: #ffffff;
+    color: var(--color-text-primary, #ffffff);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.6);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
+    color: white;
+    box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.6);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger-dark) 100%);
+    color: white;
+    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+}
+
+.btn-danger:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(231, 76, 60, 0.6);
+}
+
+.card {
+    background: var(--color-bg-card);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: var(--color-text-muted);
+}
+
+.text-secondary {
+    color: var(--color-text-secondary);
+}
+
+.text-accent {
+    color: var(--color-accent);
+}
+
+.text-primary {
+    color: var(--color-primary);
+}
+
+.text-danger {
+    color: var(--color-danger);
+}
+
+.text-info {
+    color: var(--color-info);
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-sm {
+    gap: var(--spacing-sm);
+}
+
+.gap-md {
+    gap: var(--spacing-md);
+}
+
+.gap-lg {
+    gap: var(--spacing-lg);
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 20px rgba(74, 222, 128, 0.5); }
+    to { text-shadow: 0 0 40px rgba(74, 222, 128, 0.8); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.fullscreen-mode .install-prompt,
+.fullscreen-mode .add-to-home-screen,
+.fullscreen-mode [aria-label*="安装"],
+.fullscreen-mode [aria-label*="添加"],
+.fullscreen-mode [aria-label*="Install"],
+.fullscreen-mode [aria-label*="Add"] {
+    display: none !important;
+}
+
+.fullscreen-mode .pwa-install-btn,
+.fullscreen-mode .web-app-install-hint {
+    display: none !important;
+}
+
+/* 全屏模式样式 */
+.fullscreen-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.fullscreen-mode html,
+.fullscreen-mode body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.fullscreen-mode .container {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 隐藏所有浏览器UI元素 */
+.fullscreen-mode ::-webkit-scrollbar {
+    display: none;
+}
+
+.fullscreen-mode [role="navigation"],
+.fullscreen-mode [role="toolbar"],
+.fullscreen-mode [aria-label*="navigation"],
+.fullscreen-mode [aria-label*="toolbar"],
+.fullscreen-mode [aria-label*="menu"] {
+    display: none !important;
+}
+
+/* 适配设备安全区域 - 增强版 */
+.safe-area-content {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: max(env(safe-area-inset-bottom), 40px);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    min-height: 100vh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.fullscreen-mode .safe-area-content {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: max(env(safe-area-inset-bottom), 40px);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+/* 横屏模式适配 */
+@media (orientation: landscape) and (max-height: 500px) {
+    .safe-area-content {
+        padding-bottom: max(env(safe-area-inset-bottom), 20px);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-sm);
+    }
+    
+    .btn {
+        padding: var(--spacing-xs) var(--spacing-md);
+        font-size: var(--font-size-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: var(--spacing-xs);
+    }
+    
+    .btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: var(--font-size-xs);
+    }
+}
